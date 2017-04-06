@@ -19,4 +19,20 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="log.txt">
+      <Filter>Файлы исходного кода</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="geom.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
