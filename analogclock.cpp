@@ -1,5 +1,6 @@
 #pragma once
 #include <QtWidgets>
+#include <memory>
 
 #include "scene.h"
 #include "geom.h"
@@ -23,13 +24,16 @@
       painter.setRenderHint(QPainter::Antialiasing,true);
       painter.setPen(linepen);
 
-      std::vector<GeomObj> obj;
+      std::vector<GeomObj*> obj;
       ThreeDVector center(5.0, 5.0, 5.0);
       RGBColor sphcol(10.0, 3.0, 12.0);
-      Sphere sph(center, 3.0, sphcol);
+      auto sph = new Sphere(center, 3.0, sphcol);
       obj.push_back(sph);
-      Scene scene(obj, ThreeDVector(15, 0, 10), ThreeDVector(15, 20, 10),
-                  ThreeDVector(15, 0, 0), ThreeDVector(30, 10, 5), 200, 100);
+      ThreeDVector ul(15.0, 0.0, 10.0);
+      ThreeDVector ur(15.0, 20.0, 10.0);
+      ThreeDVector dl(15.0, 0.0, 0.0);
+      ThreeDVector eye(30.0, 10.0, 5.0);
+      Scene scene(obj, ul, ur, dl, eye, 200, 100);
 
       auto points = scene.process();
 

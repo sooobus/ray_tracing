@@ -12,13 +12,10 @@ public:
 	unsigned int r, g, b;
 };
 
-
-
-
-
 class ThreeDVector {
 public:
     ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
+    ThreeDVector(){};
     double len() {
         return sqrt(x * x + y * y + z * z);
     }
@@ -53,19 +50,21 @@ float v_dot_product(ThreeDVector& a, ThreeDVector& b) {
 }
 
 struct Ray{
+    Ray(ThreeDVector start_, ThreeDVector dir_) : start(start_), dir(dir_) {};
     ThreeDVector start;
     ThreeDVector dir;
 };
 
 class GeomObj {
 public:
+    GeomObj(){};
     GeomObj(RGBColor color_) : color(color_){}
-    virtual pair<bool, ThreeDVector> ray_intersect(Ray r);
+    virtual pair<bool, ThreeDVector> ray_intersect(Ray r){return {false, ThreeDVector(0, 0, 0)}};
     RGBColor color;
 };
 
 
-class Sphere : GeomObj {
+class Sphere : public GeomObj {
 public:
     Sphere(ThreeDVector center_, double r_, RGBColor color_) : GeomObj(color_), center(center_), r(r_) {};
 
@@ -96,7 +95,7 @@ public:
 	double r;
 };
 
-class Triangle : GeomObj {
+class Triangle : public GeomObj {
 public:
     Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_) : GeomObj(RGBColor(0, 0, 0)), a(a_), b(b_), c(c_) {};
     Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, RGBColor color_) : GeomObj(color_), a(a_), b(b_), c(c_) {};
