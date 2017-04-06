@@ -1,12 +1,15 @@
  QT += widgets
 
   HEADERS       = \
-    analogclock.h
+    analogclock.h \
+    geom.h \
+    scene.h \
+    utils.h
   SOURCES       = \
                   main.cpp \
     analogclock.cpp
 
-  QMAKE_PROJECT_NAME = widgets_analogclock
+  QMAKE_PROJECT_NAME = RayTracing
 
   # install
   target.path = $$[QT_INSTALL_EXAMPLES]/widgets/widgets/analogclock

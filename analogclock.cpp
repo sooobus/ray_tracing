@@ -18,6 +18,10 @@
       linepen.setWidth(5);
       painter.setRenderHint(QPainter::Antialiasing,true);
       painter.setPen(linepen);
-      for(int i = 0; i < 100; i++)
-        painter.drawPoint(rand() % 100, rand() % 100);
+ std::vector<std::pair<int, int>> points;
+
+    points.push_back({10, 20});
+
+      for(int i = 0; i < points.size(); i++)
+        painter.drawPoint(points[i].first, points[i].second);
   }

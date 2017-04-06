@@ -3,6 +3,7 @@
 
   #include <QWidget>
 
+
   class SceneView : public QWidget
   {
       Q_OBJECT

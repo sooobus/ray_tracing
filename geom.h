@@ -11,21 +11,16 @@ class RGBColor {
 };
 
 class GeomObj {
-
+    virtual pair<bool, ThreeDVector> ray_intersect(Ray r);
+    RGBColor color;
 };
 
 class ThreeDVector : GeomObj {
 public:
-	ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
-	double x, y, z;
-};
-
-class ThreeDVector : GeomObj {
-public:
-	ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
+    ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
 	double len() {
 		return sqrt(x * x + y * y + z * z);
-	}
+    }
 	void normalize() {
 		double l = len();
 		x /= l;
@@ -89,7 +84,6 @@ public:
 	
 	}
 
-	RGBColor color;
 	ThreeDVector center;
 	double r;
 };
@@ -98,7 +92,7 @@ class Triangle : GeomObj {
 public:
 	Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_) : a(a_), b(b_), c(c_) {};
 
-	pair<bool, ThreeDVector> ray_intersect(Ray ray) {
+    pair<bool, ThreeDVector> ray_interseayct(Ray r) {
 		ThreeDVector res(0, 0, 0);
 		auto N = normal_vector();
 
