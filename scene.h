@@ -3,7 +3,7 @@
 
 class Scene {
     Scene(vector<GeomObj> objects_, ThreeDVector ulcorner_, ThreeDVector urcorner_,
-          ThreeDVector dlcorner_, ThreeDVector eye_, size_t pxx_, size_t pxy_):objects(objects_),
+          ThreeDVector dlcorner_, ThreeDVector eye_, size_t pxx_, size_t pxy_) : objects(objects_),
           ulcorner(ulcorner_), eye(eye_), pxx(pxx_), pxy(pxy_){
         xstep = (urcorner_ - ulcorner_) * (1 / (double)pxx_);
         ystep = (dlcorner_ - ulcorner_) * (1 / (double)pxy_);
