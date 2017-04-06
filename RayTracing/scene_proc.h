@@ -5,6 +5,23 @@ using namespace std;
 
 const double EPS = 0.001;
 
+bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1)
+{
+	float discr = b * b - 4 * a * c;
+	if (discr < 0) return false;
+	else if (discr == 0) x0 = x1 = -0.5 * b / a;
+	else {
+		float q = (b > 0) ?
+			-0.5 * (b + sqrt(discr)) :
+			-0.5 * (b - sqrt(discr));
+		x0 = q / a;
+		x1 = c / q;
+	}
+	if (x0 > x1) std::swap(x0, x1);
+
+	return true;
+}
+
 class RGBColor {
 	unsigned int r, g, b;
 };
@@ -62,10 +79,35 @@ public:
 };
 
 class Sphere : GeomObj {
+public:
+	Sphere(RGBColor color_, ThreeDVector center_) : color(color_), center(center_) {};
+
+	pair<bool, ThreeDVector> ray_intersect(Ray ray) {
+		float t0, t1; // solutions for t if the ray intersects 
+		ThreeDVector L = ray.start - center;
+		float a = v_dot_product(ray.dir, ray.dir);
+		float b = 2 * v_dot_product(ray.dir, L);
+		float c = v_dot_product(L, L) - r * r;
+
+		if (!solveQuadratic(a, b, c, t0, t1)) 
+			return{ false, center };
+
+		if (t0 > t1) 
+			std::swap(t0, t1);
+
+		if (t0 < 0) {
+			t0 = t1; // if t0 is negative, let's use t1 instead 
+			if (t0 < 0) 
+				return{ false, center }; // both t0 and t1 are negative 
+		}
+
+		return{ true, ray.start + ray.dir * t0 };
+	
+	}
 
 	RGBColor color;
 	ThreeDVector center;
-	unsigned int r;
+	double r;
 };
 
 class Triangle : GeomObj {
