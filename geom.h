@@ -7,59 +7,67 @@ using namespace std;
 const double EPS = 0.001;
 
 class RGBColor {
+public:
+    RGBColor(unsigned int r_, unsigned int g_, unsigned int b_): r(r_), g(g_), b(b_){}
 	unsigned int r, g, b;
 };
 
+
+
+
+
+class ThreeDVector {
+public:
+    ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
+    double len() {
+        return sqrt(x * x + y * y + z * z);
+    }
+    void normalize() {
+        double l = len();
+        x /= l;
+        y /= l;
+        z /= l;
+    }
+    ThreeDVector operator * (float a) {
+        return ThreeDVector(a * x, a * y, a * z);
+    }
+
+    ThreeDVector operator + (ThreeDVector other) {
+        return ThreeDVector(x + other.x, y + other.y, z + other.z);
+    }
+
+
+    ThreeDVector operator - (ThreeDVector other) {
+        return ThreeDVector(x - other.x, y - other.y, z - other.z);
+    }
+
+    double x, y, z;
+};
+
+ThreeDVector v_cross_product(ThreeDVector& a, ThreeDVector& b) {
+    return ThreeDVector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+
+float v_dot_product(ThreeDVector& a, ThreeDVector& b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+struct Ray{
+    ThreeDVector start;
+    ThreeDVector dir;
+};
+
 class GeomObj {
+public:
+    GeomObj(RGBColor color_) : color(color_){}
     virtual pair<bool, ThreeDVector> ray_intersect(Ray r);
     RGBColor color;
 };
 
-class ThreeDVector : GeomObj {
-public:
-    ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
-	double len() {
-		return sqrt(x * x + y * y + z * z);
-    }
-	void normalize() {
-		double l = len();
-		x /= l;
-		y /= l;
-		z /= l;
-	}
-	ThreeDVector operator * (float a) {
-		return ThreeDVector(a * x, a * y, a * z);
-	}
-
-	ThreeDVector operator + (ThreeDVector other) {
-		return ThreeDVector(x + other.x, y + other.y, z + other.z);
-	}
-
-
-	ThreeDVector operator - (ThreeDVector other) {
-		return ThreeDVector(x - other.x, y - other.y, z - other.z);
-	}
-
-	double x, y, z;
-};
-
-ThreeDVector v_cross_product(ThreeDVector& a, ThreeDVector& b) {
-	return ThreeDVector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-}
-
-float v_dot_product(ThreeDVector& a, ThreeDVector& b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-class Ray : GeomObj {
-public:
-	ThreeDVector start;
-	ThreeDVector dir;
-};
 
 class Sphere : GeomObj {
 public:
-	Sphere(RGBColor color_, ThreeDVector center_) : color(color_), center(center_) {};
+    Sphere(ThreeDVector center_, double r_, RGBColor color_) : GeomObj(color_), center(center_), r(r_) {};
 
 	pair<bool, ThreeDVector> ray_intersect(Ray ray) {
 		float t0, t1; // solutions for t if the ray intersects 
@@ -90,9 +98,10 @@ public:
 
 class Triangle : GeomObj {
 public:
-	Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_) : a(a_), b(b_), c(c_) {};
+    Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_) : GeomObj(RGBColor(0, 0, 0)), a(a_), b(b_), c(c_) {};
+    Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, RGBColor color_) : GeomObj(color_), a(a_), b(b_), c(c_) {};
 
-    pair<bool, ThreeDVector> ray_interseayct(Ray r) {
+    pair<bool, ThreeDVector> ray_intersect(Ray ray) {
 		ThreeDVector res(0, 0, 0);
 		auto N = normal_vector();
 

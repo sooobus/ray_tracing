@@ -2,11 +2,15 @@
 #include "geom.h"
 
 class Scene {
-    Scene(){
-
+    Scene(vector<GeomObj> objects_, ThreeDVector ulcorner_, ThreeDVector urcorner_,
+          ThreeDVector dlcorner_, ThreeDVector eye_, size_t pxx_, size_t pxy_):objects(objects_),
+          ulcorner(ulcorner_), eye(eye_), pxx(pxx_), pxy(pxy_){
+        xstep = (urcorner_ - ulcorner_) * (1 / (double)pxx_);
+        ystep = (dlcorner_ - ulcorner_) * (1 / (double)pxy_);
     }
 
     vector<pair<ThreeDVector, RGBColor>> process(){
+        vector<pair<ThreeDVector, RGBColor>> ans;
         for(unsigned int i; i < pxx; i++){
             for(unsigned int j; j < pxy; j++){
                 ThreeDVector screen_point = ulcorner + xstep * (float)i + ystep * (float)j;
@@ -26,7 +30,7 @@ class Scene {
                     }
                 }
                 if(found)
-                    ans.push_back({nearest, nearest_color});
+                    ans.push_back({ThreeDVector(i, j, 0.0), nearest_color});
             }
         }
     }
@@ -35,5 +39,5 @@ class Scene {
     ThreeDVector ulcorner;
     ThreeDVector xstep, ystep;
     ThreeDVector eye;
-    unsigned int pxx, pxy;
+    size_t pxx, pxy;
 };
