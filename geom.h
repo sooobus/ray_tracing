@@ -59,7 +59,7 @@ class GeomObj {
 public:
     GeomObj(){};
     GeomObj(RGBColor color_) : color(color_){}
-    virtual pair<bool, ThreeDVector> ray_intersect(Ray r){return {false, ThreeDVector(0, 0, 0)}};
+    virtual pair<bool, ThreeDVector> ray_intersect(Ray r) = 0;
     RGBColor color;
 };
 
