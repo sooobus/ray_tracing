@@ -163,6 +163,25 @@ public:
 
 };
 
-class Quadrilateral : GeomObj {
-	ThreeDVector vertexes[4];
+class Quadrilateral : public GeomObj {
+public:
+    Quadrilateral(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, ThreeDVector d_) :
+        GeomObj(RGBColor(0, 0, 0)), a(a_), b(b_), c(c_), d(d_) {};
+    Quadrilateral(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, ThreeDVector d_, RGBColor color_) :
+        GeomObj(color_),  a(a_), b(b_), c(c_), d(d_) {};
+
+    ThreeDVector a, b, c, d;
+
+    pair<bool, ThreeDVector> ray_intersect(Ray ray) {
+        Triangle abd(a, b, d);
+        Triangle bcd(b, c, d);
+        pair<bool, ThreeDVector> t1 = abd.ray_intersect(ray);
+        pair<bool, ThreeDVector> t2 = bcd.ray_intersect(ray);
+        if (t1.first)
+            return t1;
+        if (t2.first)
+            return t2;
+        else
+            return {false, ThreeDVector(0, 0, 0)};
+    }
 };
