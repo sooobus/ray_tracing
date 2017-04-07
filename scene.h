@@ -55,8 +55,8 @@ public:
                             }
                         }
                         if(accessible){
-                            std::cout << 100 * (light->power / (ray.len() * ray.len())) * fabs(cosa(nearest_obj->normal(nearest), ray)) << endl;
-                            nearest_color.add(100 * (light->power / (ray.len() * ray.len())) * fabs(cosa(nearest_obj->normal(nearest), ray)));
+                            std::cout << (light->power / (ray.len() * ray.len())) * fabs(cosa(nearest_obj->normal(nearest), ray)) << endl;
+                            nearest_color.add((light->power / (ray.len() * ray.len())) * fabs(cosa(nearest_obj->normal(nearest), ray)));
                         }
                     }
 

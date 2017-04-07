@@ -21,25 +21,49 @@
 
       std::vector<PointLightSource*> lig;
       std::vector<GeomObj*> obj;
-      ThreeDVector center(5.0, 2.0, 5.0);
-      RGBColor sphcol(255, 216, 0);
-      auto sph = new Sphere(center, 3.0, sphcol);
-      auto sph1 = new Sphere(ThreeDVector(5, 3, 10), 3.0, sphcol);
-      auto tri = new Triangle(ThreeDVector(50, 5, 100), ThreeDVector(50, 0, 5), ThreeDVector(50, 10, 5));
-      auto tri1 = new Triangle(ThreeDVector(5, 5, 10), ThreeDVector(5, 0, 5), ThreeDVector(5, 10, 5));
-      obj.push_back(tri);
-      obj.push_back(tri1);
-      obj.push_back(sph);
-      obj.push_back(sph1);
-      auto quad = new Quadrilateral(ThreeDVector(5, 0, 0), ThreeDVector(5, 20, 0), ThreeDVector(0, 20, 5), ThreeDVector(0, 0, 5), RGBColor(50, 170, 10));
-      obj.push_back(quad);
-      ThreeDVector ul(15.0, 0.0, 10.0);
-      ThreeDVector ur(15.0, 20.0, 10.0);
-      ThreeDVector dl(15.0, 0.0, 0.0);
-      ThreeDVector eye(30.0, 10.0, 5.0);
-      PointLightSource candle(ThreeDVector(10, 20, 5), 50);
-      lig.push_back(&candle);
-      Scene scene(obj, lig, ul, ur, dl, eye, 750, 450);
+      //ThreeDVector center(5.0, 2.0, 5.0);
+      //RGBColor sphcol(255, 216, 0);
+      //auto sph = new Sphere(center, 3.0, sphcol);
+      //auto sph1 = new Sphere(ThreeDVector(5, 3, 10), 3.0, sphcol);
+      //auto tri1 = new Triangle(ThreeDVector(5, 5, 10), ThreeDVector(5, 0, 5), ThreeDVector(5, 10, 5));
+      //obj.push_back(tri1);
+      //obj.push_back(sph);
+      //obj.push_back(sph1);
+      //auto quad = new Quadrilateral(ThreeDVector(5, 0, 0), ThreeDVector(5, 20, 0), ThreeDVector(0, 20, 5), ThreeDVector(0, 0, 5), RGBColor(50, 170, 10));
+      //obj.push_back(quad);
+      ThreeDVector ul(0, 0, 40.0);
+      ThreeDVector ur(50, 0, 40.0);
+      ThreeDVector dl(0, 0, 0);
+      ThreeDVector eye(25, -30.0, 15.0);
+      //PointLightSource candle(ThreeDVector(10, 15, 5), 50);
+      //lig.push_back(&candle);
+
+      /*
+      Quadrilateral base(ThreeDVector(30, 50, 30), ThreeDVector(80, 50, 30), ThreeDVector(80, 100, 30), ThreeDVector(30, 100, 30), RGBColor(75, 0, 130));
+      obj.push_back(&base);
+      Quadrilateral side(ThreeDVector(40, 60, 30), ThreeDVector(70, 60, 30), ThreeDVector(40, 60, 40), ThreeDVector(70, 60, 40), RGBColor(75, 0, 130));
+      obj.push_back(&side);
+      obj.push_back(&base);
+      Triangle edge(ThreeDVector(30, 50, 30), ThreeDVector(80, 50, 30), ThreeDVector(55, 47, 30), RGBColor(75, 0, 130));
+      obj.push_back(&edge);
+      Triangle edge2(ThreeDVector(80, 50, 30), ThreeDVector(80, 100, 30), ThreeDVector(83, 125, 30), RGBColor(75, 0, 130));
+      Triangle edge3(ThreeDVector(80, 100, 30), ThreeDVector(30, 100, 30), ThreeDVector(55, 103, 30), RGBColor(75, 0, 130));
+      Triangle edge4(ThreeDVector(30, 100, 30), ThreeDVector(30, 50, 30), ThreeDVector(27, 75, 30), RGBColor(75, 0, 130));
+      obj.push_back(&edge2);
+      obj.push_back(&edge3);
+      obj.push_back(&edge4);
+      Sphere cap(ThreeDVector(55, 75, 45), 10, RGBColor(255, 216, 0));
+      obj.push_back(&cap);
+      */
+
+      auto s1 = new Sphere(ThreeDVector(20, 20, 20), 10, RGBColor(255, 216, 0));
+      auto s2 = new Sphere(ThreeDVector(40, 40, 40), 10, RGBColor(216, 100, 20));
+      auto candle = new PointLightSource(ThreeDVector(20, 20, 50), 50000);
+
+      obj.push_back(s1);
+      obj.push_back(s2);
+      lig.push_back(candle);
+      Scene scene(obj, lig, ul, ur, dl, eye, 800, 600);
 
       auto points = scene.process();
       painter.drawPoint(10 * (1 + points.size()), 10);
