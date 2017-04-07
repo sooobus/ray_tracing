@@ -8,6 +8,7 @@ const double EPS = 0.001;
 
 class RGBColor {
 public:
+    RGBColor(){};
     RGBColor(unsigned int r_, unsigned int g_, unsigned int b_): r(r_), g(g_), b(b_){}
 	unsigned int r, g, b;
 };
@@ -57,8 +58,8 @@ struct Ray{
 
 class GeomObj {
 public:
-    GeomObj(){};
     GeomObj(RGBColor color_) : color(color_){}
+    GeomObj(){};
     virtual pair<bool, ThreeDVector> ray_intersect(Ray r) = 0;
     RGBColor color;
 };
@@ -109,16 +110,16 @@ public:
 		// check if ray and plane are parallel ?
 		float NdotRayDirection = v_dot_product(N, ray.dir);
 		if (fabs(NdotRayDirection) < EPS) 
-			return{ false, res }; // they are parallel so they don't intersect ! 
+            return{ false, res }; // they are parallel so they don't intersect !
 
 		// compute d parameter using equation 2
-		float d = v_dot_product(N, a);
+        float d = -v_dot_product(N, a);
 
 		// compute t (equation 3)
-		float t = (v_dot_product(N, ray.start) + d) / NdotRayDirection;
+        float t = -(v_dot_product(N, ray.start) + d) / NdotRayDirection;
 		// check if the triangle is in behind the ray
 		if (t < 0) 
-			return { false, res }; // the triangle is behind 
+            return { false, ThreeDVector(1, 1, 1) }; // the triangle is behind
 
 								 // compute the intersection ThreeDVector using equation 1
 		auto P = ray.start + ray.dir * t;
