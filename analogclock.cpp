@@ -19,7 +19,7 @@
       setAttribute(Qt::WA_OpaquePaintEvent);
       QPainter painter(this);
 
-
+      std::vector<PointLightSource*> lig;
       std::vector<GeomObj*> obj;
       ThreeDVector center(5.0, 2.0, 5.0);
       RGBColor sphcol(255, 216, 0);
@@ -37,14 +37,16 @@
       ThreeDVector ur(15.0, 20.0, 10.0);
       ThreeDVector dl(15.0, 0.0, 0.0);
       ThreeDVector eye(30.0, 10.0, 5.0);
-      Scene scene(obj, ul, ur, dl, eye, 200, 100);
+      PointLightSource candle(ThreeDVector(10, 20, 5), 50);
+      lig.push_back(&candle);
+      Scene scene(obj, lig, ul, ur, dl, eye, 750, 450);
 
       auto points = scene.process();
       painter.drawPoint(10 * (1 + points.size()), 10);
       for(int i = 0; i < points.size(); i++){
           QPen linepen(QColor(points[i].second.r, points[i].second.g, points[i].second.b, 255));
           linepen.setCapStyle(Qt::RoundCap);
-          linepen.setWidth(5);
+          linepen.setWidth(1);
           painter.setRenderHint(QPainter::Antialiasing,true);
           painter.setPen(linepen);
         painter.drawPoint(points[i].first.x, points[i].first.y);

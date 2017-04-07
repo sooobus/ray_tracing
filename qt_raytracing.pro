@@ -4,7 +4,8 @@
     analogclock.h \
     geom.h \
     scene.h \
-    utils.h
+    utils.h \
+    light.h
   SOURCES       = \
                   main.cpp \
     analogclock.cpp

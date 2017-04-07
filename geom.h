@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "utils.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -9,7 +10,13 @@ const double EPS = 0.001;
 class RGBColor {
 public:
     RGBColor(){};
-    RGBColor(unsigned int r_, unsigned int g_, unsigned int b_): r(r_), g(g_), b(b_){}
+    RGBColor(unsigned int r_, unsigned int g_, unsigned int b_): r(r_), g(g_), b(b_){};
+    void add(float a){
+        r = (r + (unsigned int)a) < 255 ? (r + (unsigned int)a) : 255;
+        g = (g + (unsigned int)a) < 255 ? (g + (unsigned int)a) : 255;
+        b = (b + (unsigned int)a) < 255 ? (b + (unsigned int)a) : 255;
+    }
+
 	unsigned int r, g, b;
 };
 
@@ -50,6 +57,10 @@ float v_dot_product(ThreeDVector& a, ThreeDVector& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+float cosa(ThreeDVector& a, ThreeDVector& b){
+    return v_dot_product(a, b) / (a.len() * b.len());
+}
+
 struct Ray{
     Ray(ThreeDVector start_, ThreeDVector dir_) : start(start_), dir(dir_) {};
     ThreeDVector start;
@@ -61,6 +72,7 @@ public:
     GeomObj(RGBColor color_) : color(color_){}
     GeomObj(){};
     virtual pair<bool, ThreeDVector> ray_intersect(Ray r) = 0;
+    virtual ThreeDVector normal(ThreeDVector pnt) = 0;
     RGBColor color;
 };
 
@@ -68,6 +80,10 @@ public:
 class Sphere : public GeomObj {
 public:
     Sphere(ThreeDVector center_, double r_, RGBColor color_) : GeomObj(color_), center(center_), r(r_) {};
+
+    ThreeDVector normal(ThreeDVector pnt){
+        return pnt - center;
+    }
 
 	pair<bool, ThreeDVector> ray_intersect(Ray ray) {
 		float t0, t1; // solutions for t if the ray intersects 
@@ -151,13 +167,21 @@ public:
 		return { true, P }; // this ray hits the triangle 
 	}
 
-	ThreeDVector normal_vector() {
+    ThreeDVector normal_vector() {
 		auto side1 = b - a;
 		auto side2 = c - a;
 		auto nv = v_cross_product(side1, side2);
 		nv.normalize();
 		return nv;
 	}
+
+    ThreeDVector normal(ThreeDVector pnt){
+        auto side1 = b - a;
+        auto side2 = c - a;
+        auto nv = v_cross_product(side1, side2);
+        nv.normalize();
+        return nv;
+    }
 
 	ThreeDVector a, b, c;
 
@@ -171,6 +195,10 @@ public:
         GeomObj(color_),  a(a_), b(b_), c(c_), d(d_) {};
 
     ThreeDVector a, b, c, d;
+
+    ThreeDVector normal(ThreeDVector pnt){
+        return (Triangle(a, b, d)).normal_vector();
+    }
 
     pair<bool, ThreeDVector> ray_intersect(Ray ray) {
         Triangle abd(a, b, d);
