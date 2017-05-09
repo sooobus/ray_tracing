@@ -1,4 +1,3 @@
-#pragma once
 #include <QtWidgets>
 #include <memory>
 
@@ -35,10 +34,10 @@
       */
 
       // Для сфер
-      ThreeDVector ul(0, 0, 40.0);
-      ThreeDVector ur(50, 0, 40.0);
+      ThreeDVector ul(0, 0, 60.0);
+      ThreeDVector ur(80, 0, 60.0);
       ThreeDVector dl(0, 0, 0);
-      ThreeDVector eye(5, -50, 10); //5 -30 15
+      ThreeDVector eye(40, -100, 30); //5 -30 15
 
 
       /*
@@ -72,23 +71,31 @@
 
       auto s1 = new Sphere(ThreeDVector(20, 20, 20), 10, RGBColor(255, 216, 0));
       auto s2 = new Sphere(ThreeDVector(40, 40, 40), 10, RGBColor(216, 100, 20));
-      auto tri1 = new Triangle(ThreeDVector(20, 20, 20), ThreeDVector(40, 40, 40), ThreeDVector(30, 50, 50), RGBColor(209, 11, 75));
-      auto candle = new PointLightSource(ThreeDVector(20, 20, 50), 70000); //20 20 50
-      //auto candle2 = new PointLightSource(ThreeDVector(25, -20, 20), 70000); //20 20 50
-      auto quad = new Quadrilateral(ThreeDVector(0, 0, 0), ThreeDVector(40, 0, 0), ThreeDVector(40, 40, 0), ThreeDVector(0, 40, 0), RGBColor(50, 170, 10));
+      auto s3 = new Sphere(ThreeDVector(50, 50, 50), 10, RGBColor(255, 100, 20));
+      auto s5 = new Sphere(ThreeDVector(10, 10, 10), 10, RGBColor(216, 10, 20));
+      auto s4 = new Sphere(ThreeDVector(30, 30, 30), 10, RGBColor(216, 100, 2));
+      auto tri1 = new Triangle(ThreeDVector(0, 20, 20), ThreeDVector(50, 0, 50), ThreeDVector(30, 50, 50), RGBColor(209, 11, 75));
+      auto candle = new PointLightSource(ThreeDVector(20, 20, 55), 70000); //20 20 50
+      auto candle2 = new PointLightSource(ThreeDVector(25, -20, 20), 70000); //20 20 50
+      //auto quad = new Quadrilateral(ThreeDVector(0, 0, 30), ThreeDVector(40, 0, 30), ThreeDVector(40, 40, 50), ThreeDVector(0, 40, 50), RGBColor(50, 170, 10));
 
-      obj.push_back(quad);
+      //obj.push_back(quad);
 
       obj.push_back(s1);
       obj.push_back(s2);
+      obj.push_back(s3);
+      obj.push_back(s4);
+      obj.push_back(s5);
+
+
       obj.push_back(tri1);
       lig.push_back(candle);
-      //lig.push_back(candle2);
+      lig.push_back(candle2);
       Scene scene(obj, lig, ul, ur, dl, eye, 800, 600);
 
       auto points = scene.process();
-      painter.drawPoint(10 * (1 + points.size()), 10);
-      for(int i = 0; i < points.size(); i++){
+      //painter.drawPoint(10 * (points.size()), 10);
+      for(size_t i = 0; i < points.size(); i++){
           QPen linepen(QColor(points[i].second.r, points[i].second.g, points[i].second.b, 255));
           linepen.setCapStyle(Qt::RoundCap);
           linepen.setWidth(1);

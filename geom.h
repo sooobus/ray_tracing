@@ -2,19 +2,36 @@
 #include <vector>
 #include "utils.h"
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
-const double EPS = 0.001;
+const long double EPS = 0.001;
+
+template <typename T> T* do_nothing( T& smth){
+    return &smth;
+}
 
 class RGBColor {
 public:
     RGBColor(){};
     RGBColor(unsigned int r_, unsigned int g_, unsigned int b_): r(r_), g(g_), b(b_){};
-    void add(float a){
+    RGBColor(RGBColor c, double coeff){
+        r = int((double)c.r * coeff);
+        g = int((double)c.g * coeff);
+        b = int((double)c.b * coeff);
+    }
+
+    void add(long double a){
         r = (r + (unsigned int)a) < 255 ? (r + (unsigned int)a) : 255;
         g = (g + (unsigned int)a) < 255 ? (g + (unsigned int)a) : 255;
         b = (b + (unsigned int)a) < 255 ? (b + (unsigned int)a) : 255;
+    }
+
+    void operator +(RGBColor c){
+        r = min(r + c.r, (unsigned int)255);
+        g = min(g + c.g, (unsigned int)255);
+        b = min(b + c.b, (unsigned int)255);
     }
 
 	unsigned int r, g, b;
@@ -22,18 +39,31 @@ public:
 
 class ThreeDVector {
 public:
-    ThreeDVector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {};
+    ThreeDVector(long double x_, long double y_, long double z_) : x(x_), y(y_), z(z_) {};
     ThreeDVector(){};
-    double len() {
+    long double len() {
         return sqrt(x * x + y * y + z * z);
     }
+
     void normalize() {
-        double l = len();
+        long double l = len();
         x /= l;
         y /= l;
         z /= l;
     }
-    ThreeDVector operator * (float a) {
+
+    void show(){
+        std::cout << "(" << x << "; " << y << "; " << z << ")" << endl;
+    }
+
+    void make_of_len(long double l){
+        normalize();
+        x *= l;
+        y *= l;
+        z *= l;
+    }
+
+    ThreeDVector operator * (long double a) {
         return ThreeDVector(a * x, a * y, a * z);
     }
 
@@ -46,18 +76,22 @@ public:
         return ThreeDVector(x - other.x, y - other.y, z - other.z);
     }
 
-    double x, y, z;
+    long double x, y, z;
 };
 
 ThreeDVector v_cross_product(ThreeDVector& a, ThreeDVector& b) {
     return ThreeDVector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
-float v_dot_product(ThreeDVector& a, ThreeDVector& b) {
+ThreeDVector v_min(ThreeDVector& a, ThreeDVector& b) {
+    return ThreeDVector(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z));
+}
+
+long double v_dot_product(ThreeDVector& a, ThreeDVector& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-float cosa(ThreeDVector& a, ThreeDVector& b){
+long double cosa(ThreeDVector& a, ThreeDVector& b){
     return v_dot_product(a, b) / (a.len() * b.len());
 }
 
@@ -79,24 +113,21 @@ public:
 
 class Sphere : public GeomObj {
 public:
-    Sphere(ThreeDVector center_, double r_, RGBColor color_) : GeomObj(color_), center(center_), r(r_) {};
+    Sphere(ThreeDVector center_, long double r_, RGBColor color_) : GeomObj(color_), center(center_), r(r_) {};
 
     ThreeDVector normal(ThreeDVector pnt){
         return pnt - center;
     }
 
 	pair<bool, ThreeDVector> ray_intersect(Ray ray) {
-		float t0, t1; // solutions for t if the ray intersects 
+        long double t0, t1; // solutions for t if the ray intersects
 		ThreeDVector L = ray.start - center;
-		float a = v_dot_product(ray.dir, ray.dir);
-		float b = 2 * v_dot_product(ray.dir, L);
-		float c = v_dot_product(L, L) - r * r;
+        long double a = v_dot_product(ray.dir, ray.dir);
+        long double b = 2 * v_dot_product(ray.dir, L);
+        long double c = v_dot_product(L, L) - r * r;
 
 		if (!solveQuadratic(a, b, c, t0, t1)) 
 			return{ false, center };
-
-		if (t0 > t1) 
-			std::swap(t0, t1);
 
 		if (t0 < 0) {
 			t0 = t1; // if t0 is negative, let's use t1 instead 
@@ -109,7 +140,7 @@ public:
 	}
 
 	ThreeDVector center;
-	double r;
+    long double r;
 };
 
 class Triangle : public GeomObj {
@@ -124,15 +155,15 @@ public:
 		// Step 1: finding P
 
 		// check if ray and plane are parallel ?
-		float NdotRayDirection = v_dot_product(N, ray.dir);
+        long double NdotRayDirection = v_dot_product(N, ray.dir);
 		if (fabs(NdotRayDirection) < EPS) 
             return{ false, res }; // they are parallel so they don't intersect !
 
 		// compute d parameter using equation 2
-        float d = -v_dot_product(N, a);
+        long double d = -v_dot_product(N, a);
 
 		// compute t (equation 3)
-        float t = -(v_dot_product(N, ray.start) + d) / NdotRayDirection;
+        long double t = -(v_dot_product(N, ray.start) + d) / NdotRayDirection;
 		// check if the triangle is in behind the ray
 		if (t < 0) 
             return { false, ThreeDVector(1, 1, 1) }; // the triangle is behind
@@ -178,6 +209,7 @@ public:
     ThreeDVector normal(ThreeDVector pnt){
         auto side1 = b - a;
         auto side2 = c - a;
+        do_nothing(pnt);
         auto nv = v_cross_product(side1, side2);
         nv.normalize();
         return nv;
@@ -197,6 +229,7 @@ public:
     ThreeDVector a, b, c, d;
 
     ThreeDVector normal(ThreeDVector pnt){
+        do_nothing(pnt);
         return (Triangle(a, b, d)).normal_vector();
     }
 
