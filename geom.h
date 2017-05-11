@@ -34,6 +34,10 @@ public:
         b = min(b + c.b, (unsigned int)255);
     }
 
+    void show(){
+        cout << r << " " << g << " " << b << endl;
+    }
+
 	unsigned int r, g, b;
 };
 
@@ -103,17 +107,18 @@ struct Ray{
 
 class GeomObj {
 public:
-    GeomObj(RGBColor color_) : color(color_){}
+    GeomObj(RGBColor color_, long double alpha_) : color(color_), alpha(alpha_){}
     GeomObj(){};
     virtual pair<bool, ThreeDVector> ray_intersect(Ray r) = 0;
     virtual ThreeDVector normal(ThreeDVector pnt) = 0;
     RGBColor color;
+    long double alpha;
 };
 
 
 class Sphere : public GeomObj {
 public:
-    Sphere(ThreeDVector center_, long double r_, RGBColor color_) : GeomObj(color_), center(center_), r(r_) {};
+    Sphere(ThreeDVector center_, long double r_, RGBColor color_, long double alpha_) : GeomObj(color_, alpha_), center(center_), r(r_){};
 
     ThreeDVector normal(ThreeDVector pnt){
         return pnt - center;
@@ -145,8 +150,8 @@ public:
 
 class Triangle : public GeomObj {
 public:
-    Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_) : GeomObj(RGBColor(0, 0, 0)), a(a_), b(b_), c(c_) {};
-    Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, RGBColor color_) : GeomObj(color_), a(a_), b(b_), c(c_) {};
+    Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_) : GeomObj(RGBColor(0, 0, 0), 1.0), a(a_), b(b_), c(c_) {};
+    Triangle(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, RGBColor color_, long double alpha_) :  GeomObj(color_, alpha_), a(a_), b(b_), c(c_) {};
 
     pair<bool, ThreeDVector> ray_intersect(Ray ray) {
 		ThreeDVector res(0, 0, 0);
@@ -222,9 +227,9 @@ public:
 class Quadrilateral : public GeomObj {
 public:
     Quadrilateral(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, ThreeDVector d_) :
-        GeomObj(RGBColor(0, 0, 0)), a(a_), b(b_), c(c_), d(d_) {};
-    Quadrilateral(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, ThreeDVector d_, RGBColor color_) :
-        GeomObj(color_),  a(a_), b(b_), c(c_), d(d_) {};
+        GeomObj(RGBColor(0, 0, 0), 1.0), a(a_), b(b_), c(c_), d(d_) {};
+    Quadrilateral(ThreeDVector a_, ThreeDVector b_, ThreeDVector c_, ThreeDVector d_, RGBColor color_, long double alpha_) :
+         GeomObj(color_, alpha_),  a(a_), b(b_), c(c_), d(d_) {};
 
     ThreeDVector a, b, c, d;
 

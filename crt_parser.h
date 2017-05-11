@@ -269,7 +269,7 @@ public:
         }
         fileStream >> currentToken; // endsphere
 
-        return new Sphere(center, radius, materials[materialName].color);
+        return new Sphere(center, radius, materials[materialName].color, materials[materialName].alpha);
     }
 
     Triangle* readTriangle(std::ifstream &fileStream, std::map<std::string, Material> &materials) {
@@ -288,7 +288,7 @@ public:
         }
         fileStream >> currentToken; // endtriangle
 
-        return new Triangle(vertices[0], vertices[1], vertices[2], materials[materialName].color);
+        return new Triangle(vertices[0], vertices[1], vertices[2], materials[materialName].color, materials[materialName].alpha);
     }
 
     Quadrilateral* readQuadrangle(std::ifstream &fileStream, std::map<std::string, Material> &materials) {
@@ -307,6 +307,6 @@ public:
         }
         fileStream >> currentToken; // endquadrangle
 
-        return new Quadrilateral(vertices[0], vertices[1], vertices[2], vertices[3], materials[materialName].color);
+        return new Quadrilateral(vertices[0], vertices[1], vertices[2], vertices[3], materials[materialName].color, materials[materialName].alpha);
     }
 };

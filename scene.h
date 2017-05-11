@@ -47,6 +47,54 @@ public:
         }
     }
 
+    pair<int, ThreeDVector> nearest_object_index(size_t index, ThreeDVector ray, ThreeDVector origin){
+        unsigned int nearest = objects.size();
+        ThreeDVector nearest_pnt(1000000, 1000000, 100000);
+        for(unsigned int o = 0; o < objects.size(); o++){
+            if(o != index){
+                auto inter = objects[o]->ray_intersect(Ray(origin, ray));
+                if(inter.first && ((nearest_pnt - origin).len() > (inter.second - origin).len() || nearest == objects.size())){
+                    nearest = o;
+                    nearest_pnt = inter.second;
+                }
+            }
+        }
+        return {nearest, nearest_pnt};
+    }
+
+    RGBColor real_color(size_t index, ThreeDVector point){
+        RGBColor res_color(0, 0, 0);
+        auto obj = objects[index];
+        for(unsigned int l = 0; l < lights.size(); l++){
+            auto light = lights[l];
+            auto ray = point - light->pos; //!!!
+            //ray.normalize();
+            bool accessible = true;
+            // Надо проверить, что наш объект -- ближайший от лампочки
+
+            unsigned int nearest_to_candle_i = index;
+            auto nearest_to_candle_pnt = point;
+            for(unsigned int o = 0; o < objects.size(); o++){
+                auto inter = objects[o]->ray_intersect(Ray(light->pos, ray));
+                if(inter.first && (nearest_to_candle_pnt - light->pos).len() > (inter.second - light->pos).len()){
+                        nearest_to_candle_i = o;
+                        nearest_to_candle_pnt = inter.second;
+
+                    }
+                if(nearest_to_candle_i != index)
+                    accessible = false;
+
+            }
+            if(accessible){
+                auto norm = obj->normal(point);
+                //std::cout << (light->power / (ray.len() * ray.len())) * fabs(cosa(norm, ray)) << endl;
+                //res_color + RGBColor(nearest_color, (light->power / (ray.len() * ray.len())) * fabs(cosa(norm, ray))/100.0);
+                res_color + RGBColor(obj->color, (light->power / (ray.len() * ray.len())) * fabs(cosa(norm, ray)));
+            }
+        }
+        return res_color;
+    }
+
     void thread_routine(size_t begin_i, size_t end_i, size_t begin_j, size_t end_j){
         for(size_t i = begin_i; i < end_i; i++){
             for(size_t j = begin_j; j < end_j; j++){
@@ -76,37 +124,26 @@ public:
                 }
                 //ans.push_back({ThreeDVector(i, j, 0.0), nearest_color});
 
-                if(found){ //подкорректируем цвет
+                RGBColor reflected_color(0, 0, 0);
 
-                    for(unsigned int l = 0; l < lights.size(); l++){
-                        auto light = lights[l];
-                        auto ray = nearest - light->pos; //!!!
-                        //ray.normalize();
-                        bool accessible = true;
-                        // Надо проверить, что наш объект -- ближайший от лампочки
+                if(found){ //вычислим отражённый цвет
 
-                        unsigned int nearest_to_candle_i = nearest_ind;
-                        auto nearest_to_candle_pnt = nearest;
-                        for(unsigned int o = 0; o < objects.size(); o++){
-                            auto inter = objects[o]->ray_intersect(Ray(light->pos, ray));
-                            if(inter.first && (nearest_to_candle_pnt - light->pos).len() > (inter.second - light->pos).len()){
-                                    nearest_to_candle_i = o;
-                                    nearest_to_candle_pnt = inter.second;
+                    auto l = nearest - eye;
+                    auto norm = nearest_obj->normal(nearest);
+                    auto reflected_ray = l - norm * 2 * (v_dot_product(l, norm) / v_dot_product(norm, norm));
 
-                                }
-                            if(nearest_to_candle_i != nearest_ind)
-                                accessible = false;
+                    auto reflected_point = nearest_object_index(nearest_ind, reflected_ray, nearest);
 
-                        }
-                        if(accessible){
-                            auto norm = nearest_obj->normal(nearest);
-                            //std::cout << (light->power / (ray.len() * ray.len())) * fabs(cosa(norm, ray)) << endl;
-                            //res_color + RGBColor(nearest_color, (light->power / (ray.len() * ray.len())) * fabs(cosa(norm, ray))/100.0);
-                            res_color + RGBColor(nearest_color, (light->power / (ray.len() * ray.len())) * fabs(cosa(norm, ray)));
-                        }
-                    }
-
+                    if(reflected_point.first != objects.size())
+                        reflected_color = real_color(reflected_point.first, reflected_point.second);
                 }
+
+
+                if(found){ //подкорректируем цвет
+                    res_color = RGBColor(reflected_color, nearest_obj->alpha);
+                    res_color + RGBColor(real_color(nearest_ind, nearest), 1 - nearest_obj->alpha);
+                }
+
                 push_mtx.lock();
                 ans.push_back({ThreeDVector(i, j, 0.0), res_color});
                 push_mtx.unlock();
@@ -165,8 +202,8 @@ public:
         return antieliasing(ans);
     }
 
-
     mutex push_mtx;
+    mutex safe_sex;
     vector<GeomObj*> objects;
     vector<PointLightSource*> lights;
     size_t pxx, pxy;
