@@ -5,7 +5,8 @@
     geom.h \
     scene.h \
     utils.h \
-    light.h
+    light.h \
+    crt_parser.h
   SOURCES       = \
                   main.cpp \
     analogclock.cpp
